@@ -1,0 +1,5 @@
+author: Wouto1997
+description: Mojang API Proxy Plugin
+main: net.wouto.proxy.MojangProxyPlugin
+name: MojangProxyPlugin
+version: ${spigot.version}
