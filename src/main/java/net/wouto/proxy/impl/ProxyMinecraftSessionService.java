@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.net.InetAddress;
 import java.net.URL;
 import java.security.KeyFactory;
@@ -54,7 +55,7 @@ public class ProxyMinecraftSessionService extends YggdrasilMinecraftSessionServi
         this.insecureProfiles = CacheBuilder.newBuilder()
                 .expireAfterWrite(6L, TimeUnit.HOURS)
                 .build(new CacheLoader<GameProfile, GameProfile>() {
-                    public GameProfile load(GameProfile gameProfile) throws Exception {
+                    public GameProfile load(@Nonnull GameProfile gameProfile) throws Exception {
                         return ProxyMinecraftSessionService.this.fillGameProfile(gameProfile, false);
                     }
                 });
@@ -112,7 +113,7 @@ public class ProxyMinecraftSessionService extends YggdrasilMinecraftSessionServi
             } catch (Exception e) {
                 try {
                     result = MojangProxyPlugin.get().getProxyUtil().getOriginalSessionService().invokeMethod("hasJoinedServer", null, gameProfile, serverId);
-                } catch (Exception e2) {
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -168,7 +169,7 @@ public class ProxyMinecraftSessionService extends YggdrasilMinecraftSessionServi
 
     @Override
     public GameProfile fillProfileProperties(GameProfile gameProfile, boolean forceChecked) {
-        GameProfile result = null;
+        GameProfile result;
         if (gameProfile.getId() == null) {
             return gameProfile;
         }
@@ -191,7 +192,7 @@ public class ProxyMinecraftSessionService extends YggdrasilMinecraftSessionServi
             MinecraftProfilePropertiesResponse localMinecraftProfilePropertiesResponse = getAuthenticationService().makeRequest(localURL, null, MinecraftProfilePropertiesResponse.class);
             if (localMinecraftProfilePropertiesResponse == null) {
                 LOGGER.debug("Couldn't fetch profile properties for " + gameProfile + " as the profile does not exist");
-                result = gameProfile;
+                throw new AuthenticationException("Unable to fetch profile from proxy");
             }
             GameProfile localGameProfile = new GameProfile(localMinecraftProfilePropertiesResponse.getId(), localMinecraftProfilePropertiesResponse.getName());
             localGameProfile.getProperties().putAll(localMinecraftProfilePropertiesResponse.getProperties());

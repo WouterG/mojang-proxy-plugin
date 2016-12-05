@@ -56,6 +56,9 @@ public class ProxyGameProfileRepository extends YggdrasilGameProfileRepository {
 					}
 					LOGGER.debug("Page {} returned {} results, parsing", page, length);
 					final Set<String> missing = Sets.newHashSet(request);
+					if (response == null) {
+						throw new AuthenticationException("Response was null");
+					}
                     if (response.getProfiles() != null) {
                         for (final GameProfile profile : response.getProfiles()) {
                             LOGGER.debug("Successfully looked up profile {}", profile);

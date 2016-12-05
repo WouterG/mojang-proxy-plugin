@@ -24,7 +24,7 @@ public class ReflectionUtil {
 				if (m != null) {
 					return m;
 				}
-			} catch (Exception e) {
+			} catch (Exception ignored) {
 			}
 			c = c.getSuperclass();
 		}
